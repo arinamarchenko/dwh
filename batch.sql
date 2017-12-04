@@ -2,16 +2,6 @@ CONNECT SYS/123456;
 show USER;
 @directory.sql
 
-create user bl_dm
-identified by 123 
-default tablespace tbs_pdb_test;
-
-grant connect to bl_dm;
-grant resource to bl_dm;
-grant dba to bl_dm;
-
-
-
 CONNECT SA_SRC/123;
 show USER;
 @sa_src/sa_src_cars.sql

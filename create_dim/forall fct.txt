@@ -1,0 +1,37 @@
+CREATE OR REPLACE PACKAGE BODY pkg_etl_load_cl_tables
+AS
+  PROCEDURE load_cl_dim_cars
+  IS
+  BEGIN
+        DECLARE
+	  CURSOR c_data IS
+    SELECT c.car_id,
+      c.car_number,
+      c.car_name,
+      vt.vehicle_type_name,
+      et.engine_type_name,
+      gt.gearbox_type_name,
+      m.model_name,
+      rs.repaired_status_name,
+      c.start_dt,
+      c.end_dt
+	FROM bl_3nf.ce_cars c
+  left join bl_3nf.ce_vehicle_type vt on c.vehicle_type_id = vt.vehicle_type_id
+  left join bl_3nf.ce_engine_type et on c.engine_type_id=et.engine_type_id
+  left join bl_3nf.ce_gearbox_type gt on c.gearbox_type_id = gt.gearbox_type_id
+  left join bl_3nf.ce_model m on c.model_id=m.model_id
+  left join bl_3nf.ce_repaired_status rs on c.repaired_status_id = rs.repaired_status_id;
+TYPE fetch_array IS TABLE OF c_data%ROWTYPE ;
+            s_array fetch_array;
+            BEGIN
+            OPEN c_data;
+                LOOP
+                    FETCH c_data BULK COLLECT INTO s_array;
+                    FORALL i IN 1..s_array.COUNT
+                     INSERT INTO fct_sales
+                     VALUES s_array(i) ;
+                     EXIT WHEN c_data%NOTFOUND;
+            END LOOP;
+        CLOSE      c_data;   
+        COMMIT; 
+ END load_cl_dim_cars;
