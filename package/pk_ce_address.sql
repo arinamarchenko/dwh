@@ -8,7 +8,6 @@ AS
 PROCEDURE load_ce_address
 IS
 BEGIN
-  EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_address';
   MERGE INTO bl_3nf.ce_address cem USING
   ( SELECT address_name, city_id, TRUNC(sysdate) update_dt FROM cl_address
   ) clm ON (cem.address_name = clm.address_name)

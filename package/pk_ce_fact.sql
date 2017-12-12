@@ -8,7 +8,6 @@ AS
   PROCEDURE load_ce_orders
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_orders';
    INSERT
 INTO bl_3nf.ce_orders(
 	car_id,
@@ -49,7 +48,7 @@ ROUND ( dbms_random.value (
       clf.avgPrice, clf.sdPrice, clf.start_dt, clf.end_dt
   FROM ( SELECT distinct order_code, cost, minPrice, maxPrice,
       avgPrice, sdPrice, start_dt, end_dt from cl_fact)clf,
-  (select * from dual connect by level <= 1000);
+  (select * from dual connect by level <= 250);
 
   commit;
   EXCEPTION

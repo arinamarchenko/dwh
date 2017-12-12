@@ -9,7 +9,6 @@ AS
 PROCEDURE load_ce_customers
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_customers';
         MERGE INTO bl_3nf.ce_customers cc
 USING ( SELECT customer_code, name, surname, age, gender, phone, email, trunc(sysdate) update_dt 
 FROM cl_customers ) clc

@@ -9,7 +9,6 @@ AS
 PROCEDURE load_ce_cars
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_cars';
         MERGE INTO bl_3nf.ce_cars cc
 USING ( SELECT car_number, car_name, vehicle_type_id, engine_type_id,
 gearbox_type_id, model_id, repaired_status_id, start_dt, end_dt FROM cl_cars ) clc

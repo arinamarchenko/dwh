@@ -8,7 +8,6 @@ AS
    PROCEDURE load_ce_seller
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_seller';
     MERGE INTO bl_3nf.ce_seller cem
 USING ( SELECT seller_code, name, surname, phone, email, city_id, trunc(sysdate) update_dt FROM cl_seller ) clm
 ON (cem.seller_code = clm.seller_code)

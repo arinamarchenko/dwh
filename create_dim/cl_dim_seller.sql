@@ -7,7 +7,9 @@
       surname     VARCHAR2(200) NOT NULL,
       phone       VARCHAR2(200) NOT NULL,
       email       VARCHAR2(200) NOT NULL,
+      city_id number,
       city_name     VARCHAR2(200) NOT NULL,
+      country_id number,
 	  country_name     VARCHAR2(200) NOT NULL,
       update_dt   DATE NOT NULL
     );

@@ -12,7 +12,6 @@ AS
 PROCEDURE load_ce_vehicle_type
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_vehicle_type';
     MERGE INTO bl_3nf.ce_vehicle_type cevt
 USING ( SELECT vehicle_type_name, trunc(sysdate) update_dt FROM cl_vehicle_type ) clvt
 ON (cevt.vehicle_type_name = clvt.vehicle_type_name)
@@ -30,7 +29,6 @@ commit;
   PROCEDURE load_ce_repaired_status
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_repaired_status';
     MERGE INTO bl_3nf.ce_repaired_status cers
 USING ( SELECT repaired_status_name, trunc(sysdate) update_dt FROM cl_repaired_status ) clrs
 ON (cers.repaired_status_name = clrs.repaired_status_name)
@@ -48,7 +46,6 @@ commit;
   PROCEDURE load_ce_engine_type
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_engine_type';
     MERGE INTO bl_3nf.ce_engine_type ceet
 USING ( SELECT engine_type_name, trunc(sysdate) update_dt FROM cl_engine_type ) clet
 ON (ceet.engine_type_name = clet.engine_type_name)
@@ -66,7 +63,6 @@ commit;
    PROCEDURE load_ce_gearbox_type
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_gearbox_type';
     MERGE INTO bl_3nf.ce_gearbox_type cegt
 USING ( SELECT gearbox_type_name, trunc(sysdate) update_dt FROM cl_gearbox_type ) clgt
 ON (cegt.gearbox_type_name = clgt.gearbox_type_name)
@@ -84,7 +80,6 @@ commit;
    PROCEDURE load_ce_model
   IS
   BEGIN
-    EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_model';
     MERGE INTO bl_3nf.ce_model cem
 USING ( SELECT model_name, brand_id, trunc(sysdate) update_dt FROM cl_model ) clm
 ON (cem.model_name = clm.model_name)

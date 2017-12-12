@@ -16,25 +16,36 @@ PROCEDURE load_dim_cars
   BEGIN
     EXECUTE IMMEDIATE 'truncate table bl_dm.dim_cars';
         MERGE INTO bl_dm.dim_cars cc
-USING ( SELECT car_id, car_number, car_name, vehicle_type_name, engine_type_name,
-gearbox_type_name, model, repaired_status_name, start_dt, end_dt FROM cl_dim_cars ) clc
+USING ( SELECT car_id, car_number, car_name, vehicle_type_id, vehicle_type_name, engine_type_id, engine_type_name, gearbox_type_id,
+gearbox_type_name, model_id, model, brand_id, brand, repaired_status_id, repaired_status_name, start_dt, end_dt FROM cl_dim_cars ) clc
 ON (cc.car_id = clc.car_id and cc.start_dt = clc.start_dt and
 cc.end_dt = clc.end_dt )
 WHEN MATCHED THEN
-  UPDATE SET cc.car_number = clc.car_number, cc.car_name=clc.car_name , 
-cc.vehicle_type_name=clc.vehicle_type_name,cc.engine_type_name = clc.engine_type_name  ,
-cc.gearbox_type_name= clc.gearbox_type_name ,cc.model= clc.model ,
-cc.repaired_status_name=clc.repaired_status_name
+  UPDATE SET cc.car_number = clc.car_number, cc.car_name=clc.car_name , cc.vehicle_type_id = clc.vehicle_type_id,
+cc.vehicle_type_name=clc.vehicle_type_name,cc.engine_type_id = clc.engine_type_id, cc.engine_type_name = clc.engine_type_name  ,
+cc.gearbox_type_id= clc.gearbox_type_id, cc.gearbox_type_name= clc.gearbox_type_name , cc.model_id= clc.model_id, cc.model= clc.model ,
+cc.brand_id= clc.brand_id, cc.brand= clc.brand ,cc.repaired_status_id=clc.repaired_status_id, cc.repaired_status_name=clc.repaired_status_name
    WHERE DECODE(cc.car_number,clc.car_number,0,1)
    +DECODE(cc.car_name,clc.car_name,0,1)
+   +DECODE(cc.vehicle_type_id,clc.vehicle_type_id,0,1)
    +DECODE(cc.vehicle_type_name,clc.vehicle_type_name,0,1)
-   +DECODE(cc.engine_type_name, clc.engine_type_name,0,1)+DECODE(cc.gearbox_type_name,clc.gearbox_type_name,0,1)
-   +DECODE(cc.model,clc.model,0,1)+DECODE(cc.repaired_status_name,clc.repaired_status_name,0,1)>0 
+   +DECODE(cc.engine_type_id, clc.engine_type_id,0,1)
+   +DECODE(cc.engine_type_name, clc.engine_type_name,0,1)
+   +DECODE(cc.gearbox_type_id,clc.gearbox_type_id,0,1)
+   +DECODE(cc.gearbox_type_name,clc.gearbox_type_name,0,1)
+   +DECODE(cc.model_id,clc.model_id,0,1)
+   +DECODE(cc.model,clc.model,0,1)
+   +DECODE(cc.brand_id,clc.brand_id,0,1)
+   +DECODE(cc.brand,clc.brand,0,1)
+   +DECODE(cc.repaired_status_name,clc.repaired_status_name,0,1)
+   +DECODE(cc.repaired_status_id,clc.repaired_status_id,0,1)>0 
 WHEN NOT MATCHED THEN 
-INSERT (cc.car_did,cc.car_id, cc.car_number, cc.car_name, cc.vehicle_type_name, cc.engine_type_name,
-cc.gearbox_type_name, cc.model, cc.repaired_status_name, cc.start_dt, cc.end_dt)
-values (bl_dm.seq_cars_dim.nextval, clc.car_id, clc.car_number, clc.car_name, clc.vehicle_type_name, clc.engine_type_name,
-clc.gearbox_type_name, clc.model, clc.repaired_status_name, clc.start_dt, clc.end_dt)  ;
+INSERT (cc.car_did,cc.car_id, cc.car_number, cc.car_name, cc.vehicle_type_id, cc.vehicle_type_name, cc.engine_type_id, cc.engine_type_name,
+cc.gearbox_type_id, cc.gearbox_type_name, cc.model_id, cc.model, cc.brand_id, cc.brand, cc.repaired_status_id, cc.repaired_status_name, cc.start_dt, cc.end_dt)
+values (bl_dm.seq_cars_dim.nextval, clc.car_id, clc.car_number, clc.car_name,  clc.vehicle_type_id, clc.vehicle_type_name, clc.engine_type_id, clc.engine_type_name, clc.gearbox_type_id,
+clc.gearbox_type_name, clc.model_id, clc.model, clc.brand_id, clc.brand,clc.repaired_status_id, clc.repaired_status_name, clc.start_dt, clc.end_dt)  ;
+
+
 commit;
   EXCEPTION
   WHEN OTHERS THEN
@@ -69,17 +80,17 @@ FROM dual CONNECT BY rownum <=365*1019;
   BEGIN
     EXECUTE IMMEDIATE 'truncate table bl_dm.dim_seller';
         MERGE INTO bl_dm.dim_seller cem
-USING ( SELECT seller_id, seller_code, name, surname, phone, email, city_name, country_name, trunc(sysdate) update_dt FROM cl_dim_seller 
+USING ( SELECT seller_id, seller_code, name, surname, phone, email, city_id, city_name, country_id, country_name, trunc(sysdate) update_dt FROM cl_dim_seller 
 ) clm
 ON (cem.seller_id= clm.seller_id)
 WHEN MATCHED THEN
-  UPDATE SET cem.seller_code= clm.seller_code, cem.name = clm.name, cem.surname=clm.surname, cem.phone=clm.phone, cem.email = clm.email, 
-  cem.city_name = clm.city_name, cem.country_name = clm.country_name, update_dt = sysdate
+  UPDATE SET cem.seller_code= clm.seller_code, cem.name = clm.name, cem.surname=clm.surname, cem.phone=clm.phone, cem.email = clm.email, cem.city_id = clm.city_id,
+  cem.city_name = clm.city_name, cem.country_id = clm.country_id, cem.country_name = clm.country_name, update_dt = sysdate
    WHERE DECODE(cem.seller_code, clm.seller_code,0,1)+DECODE(cem.name, clm.name,0,1)+DECODE(cem.surname,clm.surname,0,1)+DECODE(cem.phone,clm.phone,0,1)
-   +DECODE(cem.email, clm.email,0,1)+DECODE(cem.city_name,clm.city_name,0,1)+DECODE(cem.country_name,clm.country_name,0,1)>0 
+   +DECODE(cem.email, clm.email,0,1)+DECODE(cem.city_id,clm.city_id,0,1)+DECODE(cem.city_name,clm.city_name,0,1)+DECODE(cem.country_id,clm.country_id,0,1)+DECODE(cem.country_name,clm.country_name,0,1)>0 
 WHEN NOT MATCHED THEN 
-INSERT ( cem.seller_did, cem.seller_id, cem.seller_code, cem.name, cem.surname, cem.phone, cem.email, cem.city_name, cem.country_name, cem.update_dt )
-VALUES ( bl_dm.seq_seller_dim.nextval ,clm.seller_id , clm.seller_code, clm.name, clm.surname, clm.phone, clm.email, clm.city_name, clm.country_name,  sysdate);
+INSERT ( cem.seller_did, cem.seller_id, cem.seller_code, cem.name, cem.surname, cem.phone, cem.email, cem.city_id, cem.city_name, cem.country_id, cem.country_name, cem.update_dt )
+VALUES ( bl_dm.seq_seller_dim.nextval ,clm.seller_id , clm.seller_code, clm.name, clm.surname, clm.phone, clm.email, clm.city_id, clm.city_name, clm.country_id, clm.country_name,  sysdate);
 commit;
   EXCEPTION
   WHEN OTHERS THEN
@@ -115,22 +126,29 @@ commit;
   BEGIN
     EXECUTE IMMEDIATE 'truncate table bl_dm.dim_shop';
         MERGE INTO bl_dm.dim_shop cem
-USING ( SELECT shop_id, shop_code, shop_name, phone, email, address_name, city_name,
+USING ( SELECT shop_id, shop_code, shop_name, phone, email, address_id, address_name, city_id, city_name, country_id,
 country_name, trunc(sysdate) update_dt FROM cl_dim_shop
 ) clm
 ON (cem.shop_id= clm.shop_id)
 WHEN MATCHED THEN
   UPDATE SET cem.shop_code= clm.shop_code, cem.shop_name = clm.shop_name, cem.phone=clm.phone, 
-  cem.email = clm.email, cem.address_name = clm.address_name, cem.city_name = clm.city_name,
-  cem.country_name = clm.country_name, update_dt = sysdate
-   WHERE DECODE(cem.shop_code, clm.shop_code,0,1)+DECODE(cem.shop_name, clm.shop_name,0,1)
-   +DECODE(cem.phone,clm.phone,0,1)+DECODE(cem.email, clm.email,0,1)+DECODE(cem.address_name,clm.address_name,0,1)
-   +DECODE(cem.city_name,clm.city_name,0,1) +DECODE(cem.country_name,clm.country_name,0,1)>0 
+  cem.email = clm.email, cem.address_id = clm.address_id, cem.address_name = clm.address_name, cem.city_id = clm.city_id, cem.city_name = clm.city_name,
+  cem.country_id = clm.country_id, cem.country_name = clm.country_name, update_dt = sysdate
+   WHERE DECODE(cem.shop_code, clm.shop_code,0,1)
+   +DECODE(cem.shop_name, clm.shop_name,0,1)
+   +DECODE(cem.phone,clm.phone,0,1)
+   +DECODE(cem.email, clm.email,0,1)
+   +DECODE(cem.address_id,clm.address_id,0,1)
+   +DECODE(cem.address_name,clm.address_name,0,1)
+   +DECODE(cem.city_id,clm.city_id,0,1)
+   +DECODE(cem.city_name,clm.city_name,0,1) 
+   +DECODE(cem.country_id,clm.country_id,0,1)
+   +DECODE(cem.country_name,clm.country_name,0,1)>0 
 WHEN NOT MATCHED THEN 
-INSERT ( cem.shop_did, cem.shop_id, cem.shop_code, cem.shop_name, cem.phone, cem.email, cem.address_name,
-cem.city_name, cem.country_name, cem.update_dt )
-VALUES ( bl_dm.seq_shop_dim.nextval ,clm.shop_id, clm.shop_code, clm.shop_name, clm.phone, clm.email, clm.address_name,
-clm.city_name, clm.country_name, sysdate);
+INSERT ( cem.shop_did, cem.shop_id, cem.shop_code, cem.shop_name, cem.phone, cem.email, cem.address_id, cem.address_name,
+cem.city_id, cem.city_name, cem.country_id, cem.country_name, cem.update_dt )
+VALUES ( bl_dm.seq_shop_dim.nextval ,clm.shop_id, clm.shop_code, clm.shop_name, clm.phone, clm.email, clm.address_id, clm.address_name,
+clm.city_id, clm.city_name, clm.country_id, clm.country_name, sysdate);
 commit;
   EXCEPTION
   WHEN OTHERS THEN

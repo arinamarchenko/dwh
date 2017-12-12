@@ -8,7 +8,6 @@ AS
 PROCEDURE load_ce_shop
 IS
 BEGIN
-  EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_shop';
   MERGE INTO bl_3nf.ce_shop cem USING
   (SELECT shop_code,
     shop_name,

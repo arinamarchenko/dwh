@@ -21,7 +21,6 @@ IS
   TABLE OF c_data%rowtype INDEX BY binary_integer;
   t_data t__data;
 BEGIN
-  EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_brand';
   OPEN c_data;
   LOOP
     FETCH c_data bulk collect INTO t_data ;

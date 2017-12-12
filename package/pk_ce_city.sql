@@ -8,7 +8,6 @@ AS
 PROCEDURE load_ce_city
 IS
 BEGIN
-  EXECUTE IMMEDIATE 'truncate table bl_3nf.ce_city';
   MERGE INTO bl_3nf.ce_city cem USING
   ( SELECT city_name, country_id, TRUNC(sysdate) update_dt FROM cl_city
   ) clm ON (cem.city_name = clm.city_name AND cem.country_id = clm.country_id)

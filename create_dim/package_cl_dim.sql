@@ -20,10 +20,17 @@ AS
     car_id,
       car_number,
       car_name,
+      vehicle_type_id,
       vehicle_type_name,
+      engine_type_id,
       engine_type_name,
+      gearbox_type_id,
       gearbox_type_name,
+      model_id,
       model,
+      brand_id,
+      brand,
+      repaired_status_id,
       repaired_status_name,
       start_dt,
       end_dt
@@ -31,10 +38,17 @@ AS
     SELECT c.car_id,
       c.car_number,
       c.car_name,
+      vt.vehicle_type_id,
       vt.vehicle_type_name,
+      et.engine_type_id,
       et.engine_type_name,
+      gt.gearbox_type_id,
       gt.gearbox_type_name,
+      m.model_id,
       m.model_name,
+      b.brand_id,
+      b.brand_name,
+      rs.repaired_status_id,
       rs.repaired_status_name,
       c.start_dt,
       c.end_dt
@@ -43,6 +57,7 @@ AS
   left join bl_3nf.ce_engine_type et on c.engine_type_id=et.engine_type_id
   left join bl_3nf.ce_gearbox_type gt on c.gearbox_type_id = gt.gearbox_type_id
   left join bl_3nf.ce_model m on c.model_id=m.model_id
+  left join bl_3nf.ce_brand b on m.brand_id = b.brand_id
   left join bl_3nf.ce_repaired_status rs on c.repaired_status_id = rs.repaired_status_id;
 commit;
   EXCEPTION
@@ -84,21 +99,21 @@ commit;
   ------------------------------
   PROCEDURE load_cl_dim_date
   IS
-  BEGIN
-    EXECUTE IMMEDIATE 'truncate table cl_dim_date';
-    INSERT INTO  cl_dim_date
-SELECT SYSDATE+rownum-365*1018 as Date_id, 
-    to_number(to_char(SYSDATE+rownum-365*1018-7*1, 'D'))as Day_per_week,
-    to_number(to_char(extract(day from SYSDATE+rownum-365*1018)))as Day_per_month,
-    to_number(to_char(SYSDATE+rownum-365*1018, 'DDD')) AS Day_per_year,
-    to_number(to_char(SYSDATE+rownum-365*1018, 'W')) AS Week_per_month,
-    to_number(to_char(SYSDATE+rownum-365*1018, 'IW')) AS Week_per_year,
-    to_number(to_char(extract(month from SYSDATE+rownum-365*1018))) as Month_number,
-    to_char(SYSDATE+rownum-365*1018, 'MONTH', 'NLS_DATE_LANGUAGE=English') AS Month_name,
-    to_number(to_char(extract(year from SYSDATE+rownum-365*1018))) as Year,
-    to_char(extract(day from SYSDATE+rownum-365*1018) || '-'|| to_char(extract(month from (SYSDATE+rownum-365*1018)))) as Day_Month,
-    to_char(extract(year from SYSDATE+rownum-365*1018) || '-'|| to_char(extract(month from (SYSDATE+rownum-365*1018)))) as Year_Month
-FROM dual CONNECT BY rownum <=365*1018;
+  BEGIN 
+     EXECUTE IMMEDIATE 'truncate table bl_dm.dim_date';
+	INSERT INTO  bl_dm.dim_date
+  SELECT trunc(SYSDATE)+rownum-365*1019 as Date_id, 
+    to_number(to_char(SYSDATE+rownum-365*1019-7*1, 'D'))as Day_per_week,
+    to_number(to_char(extract(day from SYSDATE+rownum-365*1019)))as Day_per_month,
+    to_number(to_char(SYSDATE+rownum-365*1019, 'DDD')) AS Day_per_year,
+    to_number(to_char(SYSDATE+rownum-365*1019, 'W')) AS Week_per_month,
+    to_number(to_char(SYSDATE+rownum-365*1019, 'IW')) AS Week_per_year,
+    to_number(to_char(extract(month from SYSDATE+rownum-365*1019))) as Month_number,
+    to_char(SYSDATE+rownum-365*1019, 'MONTH', 'NLS_DATE_LANGUAGE=English') AS Month_name,
+    to_number(to_char(extract(year from SYSDATE+rownum-365*1019))) as Year,
+    to_char(extract(day from SYSDATE+rownum-365*1019) || '-'|| to_char(extract(month from (SYSDATE+rownum-365*1019)))) as Day_Month,
+    to_char(extract(year from SYSDATE+rownum-365*1019) || '-'|| to_char(extract(month from (SYSDATE+rownum-365*1019)))) as Year_Month
+FROM dual CONNECT BY rownum <=365*1019;
 commit;
   EXCEPTION
   WHEN OTHERS THEN
@@ -117,7 +132,9 @@ commit;
       surname,
       phone,
       email,
+      city_id,
       city_name,
+      country_id,
       country_name,
       update_dt
   )
@@ -127,7 +144,9 @@ commit;
       s.surname,
       s.phone,
       s.email,
+      ct.city_id,
       ct.city_name,
+      cnt.country_id,
       cnt.country_name,
       s.update_dt
 	FROM bl_3nf.ce_seller s
@@ -151,8 +170,11 @@ INTO cl_dim_shop
       shop_name,
       phone ,
       email,
+      address_id,
       address_name,
+      city_id,
       city_name,
+      country_id,
       country_name,
       update_dt
   )
@@ -161,8 +183,11 @@ SELECT s.shop_id,
       s.shop_name,
       s.phone ,
       s.email,
+      ad.address_id,
       ad.address_name,
+      cit.city_id,
       cit.city_name,
+      con.country_id,
       con.country_name,
       s.update_dt
 FROM bl_3nf.ce_shop s
@@ -183,10 +208,10 @@ commit;
 INTO cl_fct_orders
   (
     car_id,
-	customer_id,
-	shop_id,
-	seller_id,
-	order_code,
+    customer_id,
+    shop_id,
+    seller_id,
+    order_code,
     cost,
     minPrice,
     maxPrice,
@@ -195,10 +220,10 @@ INTO cl_fct_orders
     start_dt
   )
 SELECT car_id,
-	customer_id,
-	shop_id,
-	seller_id,
-	order_code,
+    customer_id,
+    shop_id,
+    seller_id,
+    order_code,
     cost,
     minPrice,
     maxPrice,
